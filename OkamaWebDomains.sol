@@ -29,23 +29,6 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
     event DomainURI_Update(string domainName, string oldURI, string newURI);
     event HostURI_Update(string oldURI, string newURI);
     event WebBuilderAccess(address indexed templateAddress, bool access);
-    
-    modifier isDomainRegistered(string memory _domain) {
-        require(domainRegistered[_domain]!=true, "OKAMA: Domain Taken");
-        _;
-    }
-    modifier OnlyRegistered(string memory _domain) {
-        require(domainRegistered[_domain]==true, "OKAMA: Domain Not Registered");
-        _;
-    }
-    modifier onlyDomainOwner(string memory _domain, address account) {
-        require(account==ownerOf(domainID[_domain]), "OKAMA: Not Domain Owner");
-        _;
-    }
-    modifier onlyWebBuilder(address _builder) {
-        require(approvedWebBuilder[_builder], "OKAMA: Web Builder Not Approved");
-        _;
-    }
 
     function _toLower(string memory str) internal pure returns (string memory) {
         bytes memory bStr = bytes(str);
@@ -60,6 +43,23 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
             }
         }
         return string(bLower);
+    }
+
+    modifier isDomainRegistered(string memory _domain) {
+        require(domainRegistered[_toLower(_domain)]!=true, "OKAMA: Domain Taken");
+        _;
+    }
+    modifier OnlyRegistered(string memory _domain) {
+        require(domainRegistered[_toLower(_domain)]==true, "OKAMA: Domain Not Registered");
+        _;
+    }
+    modifier onlyDomainOwner(string memory _domain, address account) {
+        require(account==ownerOf(domainID[_toLower(_domain)]), "OKAMA: Not Domain Owner");
+        _;
+    }
+    modifier onlyWebBuilder(address _builder) {
+        require(approvedWebBuilder[_builder], "OKAMA: Web Builder Not Approved");
+        _;
     }
 
     function _baseURI() internal view override returns (string memory) {

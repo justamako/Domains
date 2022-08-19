@@ -10,7 +10,7 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     string hostURI;
-    string parkingURI;
+    string parkingDomain;
     mapping(uint => string) internal domainName;
     mapping(string => uint) internal domainID;
     mapping(string => bool) internal domainRegistered;
@@ -21,8 +21,8 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
 
         constructor() ERC721("OkamaWeb Domains", "OWD") {
             hostURI = "okamaweb.io/";
-            parkingURI = "parked";
-            _registerDomain(address(this), parkingURI);
+            parkingDomain = "parked";
+            _registerDomain(address(this), parkingDomain);
         }
     
     event DomainRegister(address indexed owner, uint domainID, string domainName);
@@ -83,7 +83,7 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
         _safeMint(_owner, tokenId);
         domainName[tokenId] = domain;
         domainID[domain] = tokenId;
-        _setTokenURI(domainID[domain], parkingURI);
+        _setTokenURI(domainID[domain], parkingDomain);
         domainRegistered[domain] = true;
         _totalSupply = tokenId+1;
         emit DomainRegister(ownerOf(domainID[domain]), domainID[domain], domain);
@@ -107,6 +107,7 @@ contract OkamaWebDomains is ERC721, ERC721URIStorage, Ownable {
         emit HostURI_Update(oldURI, newURI);
         return true;
     }
+
     function manageWebBuilder(address templateAddress, bool access) external onlyOwner returns (bool) {
         approvedWebBuilder[templateAddress] = access;
         emit WebBuilderAccess(templateAddress, access);

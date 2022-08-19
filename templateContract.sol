@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "./@openzeppelin/contracts/access/Ownable.sol";
+
 interface IOkamaWebDomains {
         function linkContent(string memory domain, string memory newURI) external returns(bool);
 }
-contract Template_A {
+contract Template_A is Ownable{
 
     mapping(string => A_Structure) webStructure;
     mapping(string => A_Structure[]) oldSites;
@@ -29,6 +31,10 @@ contract Template_A {
         domainRegistry = IOkamaWebDomains(domainRegistryAddress);
     }
 
+    event SiteCreated(string domain, uint siteID);
+    event SiteArchived(string domain, uint siteID);
+    event DomainRegistryChanged(address indexed oldRegistryAddress, address indexed newRegistryAddress);
+
     function _toLower(string memory str) internal pure returns (string memory) {
         bytes memory bStr = bytes(str);
         bytes memory bLower = new bytes(bStr.length);
@@ -51,10 +57,12 @@ contract Template_A {
         //Save Old Sites In Array.
         if (webStructure[_domain].siteID!=0) {
             oldSites[_domain].push(webStructure[_domain]); 
+            emit SiteArchived(_domain,webStructure[_domain].siteID);
         }
         totalsites++;
         webStructure[_domain] = 
             A_Structure(totalsites, contentURI, sMap[0], sMap[1], sMap[2], sMap[3], sMap[4], sMap[5], sMap[6], sMap[7], sMap[8], sMap[9]);
+        emit SiteCreated(_domain,totalsites);
         return true;
         }
 
@@ -66,6 +74,13 @@ contract Template_A {
     }
     function test(uint Number) external pure returns(uint) {
         return Number+10;
+    }
+
+    function changeDomainRegistry(address domainRegistryAddress) external onlyOwner returns(bool){
+        address oldAddr = address(domainRegistry);
+        domainRegistry = IOkamaWebDomains(domainRegistryAddress);
+        emit DomainRegistryChanged(oldAddr, address(domainRegistry));
+        return true;
     }
 
 

@@ -27,7 +27,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     string private _symbol;
     
     // Token Supply
-    uint public _totalSupply;
+    uint internal _totalSupply;
     
 
     // Mapping from token ID to owner address
@@ -89,6 +89,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      */
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
+    }
+    function totalSupply() external view returns (uint) {
+        return _totalSupply;
     }
 
     /**
